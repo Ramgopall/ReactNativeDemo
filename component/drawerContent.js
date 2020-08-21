@@ -33,9 +33,13 @@ const DrawerContent = (props) => {
     }, [])
 
     signOut = () => {
-        console.log("asdasdasdasds");
+        clearAllData()
     }
-
+    const clearAllData = () => {
+        AsyncStorage.getAllKeys()
+            .then(keys => AsyncStorage.multiRemove(keys))
+            .then(() => props.navigation.navigate('login'));
+    }
     return (
         <View style={{ flex: 1 }}>
             <DrawerContentScrollView >

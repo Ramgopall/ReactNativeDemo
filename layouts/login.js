@@ -52,16 +52,20 @@ const login = ({ navigation }) => {
         ToastAndroid.show("User not found", ToastAndroid.SHORT);
     };
 
-    const [getData, { loading, data, called }] = useLazyQuery(CHECK_USER);
-    if (data != undefined && loading === false && called) {
-        if (data.Users.length === 0) {
-            showToast();
-            resetAnimation();
-        } else {
-            let namee = data.Users[0].name
-            _saveEmail(namee);
-        }
-    }
+    const [getData, { loading, data, called }] = useLazyQuery(CHECK_USER, {
+        onCompleted: data => {
+            if (data != undefined && loading === false && called) {
+                if (data.Users.length === 0) {
+                    showToast();
+                    resetAnimation();
+                } else {
+                    let namee = data.Users[0].name
+                    _saveEmail(namee);
+                }
+            }
+        },
+    });
+
     _saveEmail = async (namee) => {
         try {
             await AsyncStorage.setItem('email', email);
