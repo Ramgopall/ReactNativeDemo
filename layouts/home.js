@@ -79,41 +79,38 @@ const Home = () => {
         Animated.timing(newly, {
             toValue: 0,
             duration: 800,
-            delay: 800,
             easing: Easing.inOut(Easing.ease),
         }).start()
         Animated.timing(brands, {
             toValue: 0,
             duration: 800,
-            delay: 1600,
             easing: Easing.inOut(Easing.ease),
         }).start()
         Animated.timing(popular, {
             toValue: 0,
             duration: 800,
-            delay: 2400,
             easing: Easing.inOut(Easing.ease),
         }).start()
     }
 
     const discountAnimatedStyle = {
         transform: [{
-            translateY: discount
+            translateX: discount
         }]
     }
     const newlyAnimatedStyle = {
         transform: [{
-            translateY: newly
+            translateX: newly
         }]
     }
     const brandsAnimatedStyle = {
         transform: [{
-            translateY: brands
+            translateX: brands
         }]
     }
     const popularAnimatedStyle = {
         transform: [{
-            translateY: popular
+            translateX: popular
         }]
     }
 
