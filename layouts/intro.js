@@ -6,6 +6,7 @@ import Dot from '../component/dot';
 import { useValue, interpolateColor, onScrollEvent } from "react-native-redash";
 import Animated, { multiply, divide } from 'react-native-reanimated';
 
+import AsyncStorage from '@react-native-community/async-storage'
 const BORDER_RADIUS = 75;
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -41,6 +42,23 @@ const slides = [
     { lable: "FOURTH", color: "#FFDDDD", desc: "You only live once, but if you do it right, once is enough." },
 ]
 const intro = ({ navigation }) => {
+
+
+    React.useEffect(() => {
+        async function checkUser() {
+            try {
+                const user = await AsyncStorage.getItem('email');
+                if (user) {
+                    navigation.replace('homeNavigator');
+                }
+            } catch (error) {
+                console.log('error log', error);
+            }
+        }
+
+        checkUser()
+    }, [])
+
     const scroll = useRef();
     const x = useValue(0);
     const onScroll = onScrollEvent({ x });

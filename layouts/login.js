@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { Dimensions, StyleSheet, View, Image, Text, Animated, LogBox, ToastAndroid, ProgressBarAndroid } from 'react-native';
+import React from 'react';
+import { Dimensions, StyleSheet, View, Image, Text, LogBox, ToastAndroid } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { useLazyQuery } from '@apollo/react-hooks';
 import TextInput from '../component/textInput';
 import Button from "../component/loginButton";
 import { CHECK_USER } from '../graphql/Queries';
+import AsyncStorage from '@react-native-community/async-storage'
+import { ProgressBar } from '@react-native-community/progress-bar-android';
+import Animated, { Easing } from 'react-native-reanimated';
 LogBox.ignoreAllLogs()
 const { width } = Dimensions.get('window');
 const aspectRation = 450 / 1084;
@@ -37,8 +40,8 @@ const styles = StyleSheet.create({
     },
 });
 const login = ({ navigation }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
 
     const emailTrans = new Animated.Value(0);
     const passwordTrans = new Animated.Value(0);
@@ -49,39 +52,52 @@ const login = ({ navigation }) => {
         ToastAndroid.show("User not found", ToastAndroid.SHORT);
     };
 
-    const [getData, { loading, data }] = useLazyQuery(CHECK_USER);
+    const [getData, { loading, data, called }] = useLazyQuery(CHECK_USER, {
+        onCompleted: data => {
+            if (data != undefined && loading === false) {
+                if (data.Users.length === 0) {
+                    showToast();
+                    resetAnimation();
+                } else {
+                    let namee = data.Users[0].name
+                    _saveEmail(namee);
+                }
+            }
+        },
+    });
 
-    if (data != undefined && loading === false) {
-        if (data.Users.length === 0) {
-            showToast();
-            resetAnimation();
-        } else {
-            navigation.replace('loginSuccessfull');
+    _saveEmail = async (namee) => {
+        try {
+            await AsyncStorage.setItem('email', email);
+            await AsyncStorage.setItem('name', namee);
+            navigation.replace('homeNavigator');
+        } catch (error) {
+            // Error saveing data
         }
-    }
+    };
 
     const animatedBox = () => {
         Animated.timing(emailTrans, {
             toValue: 400,
             duration: 800,
-            useNativeDriver: false
+            easing: Easing.inOut(Easing.ease),
         }).start()
         Animated.timing(passwordTrans, {
             toValue: -400,
             duration: 800,
-            useNativeDriver: false
+            easing: Easing.inOut(Easing.ease),
         }).start()
         Animated.timing(buttonFade, {
             toValue: 0,
             duration: 800,
-            useNativeDriver: false
+            easing: Easing.inOut(Easing.ease),
         }).start()
         Animated.timing(progressFade, {
             toValue: 1,
             duration: 800,
             delay: 300,
-            useNativeDriver: false
-        }).start(() => getData({ variables: { email: email, password: password } }))
+            easing: Easing.inOut(Easing.ease),
+        }).start(() => getData({ variables: { email, password } }))
     }
 
 
@@ -89,22 +105,22 @@ const login = ({ navigation }) => {
         Animated.timing(emailTrans, {
             toValue: 0,
             duration: 1,
-            useNativeDriver: false
+            easing: Easing.inOut(Easing.ease),
         }).start()
         Animated.timing(passwordTrans, {
             toValue: 0,
             duration: 1,
-            useNativeDriver: false
+            easing: Easing.inOut(Easing.ease),
         }).start()
         Animated.timing(buttonFade, {
             toValue: 1,
             duration: 1,
-            useNativeDriver: false
+            easing: Easing.inOut(Easing.ease),
         }).start()
         Animated.timing(progressFade, {
             toValue: 0,
             duration: 1,
-            useNativeDriver: false
+            easing: Easing.inOut(Easing.ease),
         }).start(() => {
 
         })
@@ -182,7 +198,7 @@ const login = ({ navigation }) => {
                         />
                     </Animated.View>
                     <Animated.View style={[{ position: "absolute", }, progressAnimatedStyle]}>
-                        <ProgressBarAndroid
+                        <ProgressBar
                             styleAttr="Small"
                             style={
                                 {

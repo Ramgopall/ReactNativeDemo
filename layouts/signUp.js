@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Dimensions, StyleSheet, View, Image, Text, Animated, LogBox, ToastAndroid, ProgressBarAndroid } from 'react-native';
+import React from 'react';
+import { Dimensions, StyleSheet, View, Image, Text, Animated, LogBox, ToastAndroid } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { useMutation } from '@apollo/react-hooks';
 import TextInput from '../component/textInput';
 import Button from "../component/loginButton";
 import { CREATE_USER } from '../graphql/Queries';
+import AsyncStorage from '@react-native-community/async-storage'
+import { ProgressBar } from '@react-native-community/progress-bar-android';
 LogBox.ignoreAllLogs()
 const { width } = Dimensions.get('window');
 const aspectRation = 450 / 1084;
@@ -37,12 +39,13 @@ const styles = StyleSheet.create({
     },
 });
 const signUp = ({ navigation }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [name, setName] = React.useState('');
 
     const emailTrans = new Animated.Value(0);
     const passwordTrans = new Animated.Value(0);
+    const nameTrans = new Animated.Value(0);
     const buttonFade = new Animated.Value(1);
     const progressFade = new Animated.Value(0);
 
@@ -50,16 +53,37 @@ const signUp = ({ navigation }) => {
         ToastAndroid.show("User Already Exists", ToastAndroid.SHORT);
     };
 
-    const [addUser, { data: mutationData, error: mutationError }] = useMutation(CREATE_USER);
-    if (mutationData != undefined) {
-        navigation.replace('userCreated');
-    }
-    if (mutationError) {
-        showToast();
-        resetAnimation();
-    }
+    const [addUser, { data: mutationData, error: mutationError, loading }] = useMutation(CREATE_USER, {
+        onCompleted: (data) => {
+            _saveEmail()
+            navigation.replace('homeNavigator');
+        }, onError: (error) => false
+    });
+    //const { insert_Users } = mutationData || {};
+
+    React.useEffect(() => {
+        if (mutationError) {
+            resetAnimation();
+        }
+    }, [mutationError, resetAnimation])
+
+
+    _saveEmail = async () => {
+        try {
+            await AsyncStorage.setItem('email', email);
+            await AsyncStorage.setItem('name', name);
+        } catch (error) {
+            // Error saveing data
+        }
+    };
+
 
     const animatedBox = () => {
+        Animated.timing(nameTrans, {
+            toValue: -400,
+            duration: 800,
+            useNativeDriver: false
+        }).start()
         Animated.timing(emailTrans, {
             toValue: 400,
             duration: 800,
@@ -81,17 +105,20 @@ const signUp = ({ navigation }) => {
             delay: 300,
             useNativeDriver: false
         }).start(() => {
-            let emaill = email;
-            let pass = password;
             addUser({
-                variables: { email: emaill, password: pass }
+                variables: { email, password, name }
             })
         }
         )
     }
 
 
-    function resetAnimation() {
+    const resetAnimation = () => {
+        Animated.timing(nameTrans, {
+            toValue: 0,
+            duration: 1,
+            useNativeDriver: false
+        }).start()
         Animated.timing(emailTrans, {
             toValue: 0,
             duration: 1,
@@ -118,6 +145,11 @@ const signUp = ({ navigation }) => {
     const emailAnimatedStyle = {
         transform: [{
             translateX: emailTrans
+        }]
+    }
+    const nameAnimatedStyle = {
+        transform: [{
+            translateX: nameTrans
         }]
     }
     const passowrdAnimatedStyle = {
@@ -161,7 +193,15 @@ const signUp = ({ navigation }) => {
                         fontSize: 18,
                         color: "black"
                     }}>Enter your credentials below and register to a new account</Text>
-                    <Animated.View style={[{ marginTop: 40 }, emailAnimatedStyle]}>
+                    <Animated.View style={[{ marginTop: 40 }, nameAnimatedStyle]}>
+                        <TextInput
+                            icon={require('../assets/user_border.png')}
+                            placeholder="User Name"
+                            isPassword={false}
+                            text={name}
+                            setText={setName} />
+                    </Animated.View>
+                    <Animated.View style={emailAnimatedStyle}>
                         <TextInput
                             icon={require('../assets/mail.png')}
                             placeholder="Email"
@@ -186,7 +226,7 @@ const signUp = ({ navigation }) => {
                         />
                     </Animated.View>
                     <Animated.View style={[{ position: "absolute", }, progressAnimatedStyle]}>
-                        <ProgressBarAndroid
+                        <ProgressBar
                             styleAttr="Small"
                             style={
                                 {
