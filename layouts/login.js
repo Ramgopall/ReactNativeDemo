@@ -54,7 +54,7 @@ const login = ({ navigation }) => {
 
     const [getData, { loading, data, called }] = useLazyQuery(CHECK_USER, {
         onCompleted: data => {
-            if (data != undefined && loading === false) {
+            if (data != undefined && loading === false && called) {
                 if (data.Users.length === 0) {
                     showToast();
                     resetAnimation();
@@ -70,7 +70,7 @@ const login = ({ navigation }) => {
         try {
             await AsyncStorage.setItem('email', email);
             await AsyncStorage.setItem('name', namee);
-            navigation.replace('homeNavigator');
+            navigation.replace('homeDrawer');
         } catch (error) {
             // Error saveing data
         }

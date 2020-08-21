@@ -42,14 +42,12 @@ const slides = [
     { lable: "FOURTH", color: "#FFDDDD", desc: "You only live once, but if you do it right, once is enough." },
 ]
 const intro = ({ navigation }) => {
-
-
     React.useEffect(() => {
         async function checkUser() {
             try {
                 const user = await AsyncStorage.getItem('email');
                 if (user) {
-                    navigation.replace('homeNavigator');
+                    navigation.replace('homeDrawer');
                 }
             } catch (error) {
                 console.log('error log', error);
@@ -121,6 +119,7 @@ const intro = ({ navigation }) => {
                 </View>
             </View>
         </View>
+
     );
 }
 

@@ -5,9 +5,10 @@ import {
     Searchbar,
     Title,
 } from 'react-native-paper';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import HomeList from "../component/homeList";
 import Animated, { Easing } from 'react-native-reanimated';
+import Icon from 'react-native-vector-icons/Entypo';
 
 const styles = StyleSheet.create({
     root: {
@@ -16,6 +17,14 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         backgroundColor: "white",
         padding: 8
+    },
+    menu: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#efefef"
     },
     search: {
         margin: 16,
@@ -59,7 +68,7 @@ const items = [
     }
 ]
 
-const Home = () => {
+const Home = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [name, setName] = React.useState('');
     const [appState, setAppState] = React.useState(AppState.currentState);
@@ -128,10 +137,17 @@ const Home = () => {
         }
     }
 
+
     return (
         <ScrollView style={styles.root}>
             <View >
-                <Title style={styles.title}>Welcome, {name}</Title>
+                <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity style={styles.menu} onPress={() => navigation.openDrawer()}>
+                        <Icon name="menu" size={25} />
+                    </TouchableOpacity>
+                    <Title style={styles.title}>Welcome, {name}</Title>
+                </View>
+
                 <Searchbar
                     style={styles.search}
                     iconColor="#10a6fb"

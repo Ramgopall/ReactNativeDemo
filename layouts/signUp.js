@@ -56,7 +56,7 @@ const signUp = ({ navigation }) => {
     const [addUser, { data: mutationData, error: mutationError, loading }] = useMutation(CREATE_USER, {
         onCompleted: (data) => {
             _saveEmail()
-            navigation.replace('homeNavigator');
+            navigation.replace('homeDrawer');
         }, onError: (error) => false
     });
     //const { insert_Users } = mutationData || {};
