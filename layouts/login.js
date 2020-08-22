@@ -7,12 +7,12 @@ import {
   Text,
   LogBox,
   ToastAndroid,
+  Animated,
 } from 'react-native';
 import {RectButton} from 'react-native-gesture-handler';
 import {useLazyQuery} from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ProgressBar} from '@react-native-community/progress-bar-android';
-import Animated, {Easing} from 'react-native-reanimated';
 
 import TextInput from '../component/TextInput';
 import Button from '../component/LoginButton';
@@ -132,50 +132,49 @@ const Login = ({navigation}) => {
   const animatedBox = () => {
     Animated.timing(emailTrans, {
       toValue: 400,
-      duration: 1000,
-      easing: Easing.linear,
+      duration: 800,
+      useNativeDriver: false,
     }).start();
     Animated.timing(passwordTrans, {
       toValue: -400,
-      duration: 1000,
-      easing: Easing.linear,
+      duration: 800,
+      useNativeDriver: false,
     }).start();
     Animated.timing(buttonFade, {
       toValue: 0,
-      duration: 1000,
-      easing: Easing.linear,
+      duration: 800,
+      useNativeDriver: false,
     }).start();
     Animated.timing(progressFade, {
       toValue: 1,
-      duration: 1000,
-      easing: Easing.linear,
-    }).start(() => {
-      getData({variables: {email, password}});
-    });
+      duration: 800,
+      delay: 300,
+      useNativeDriver: false,
+    }).start(() => getData({variables: {email, password}}));
   };
 
-  const resetAnimation = () => {
+  function resetAnimation() {
     Animated.timing(emailTrans, {
       toValue: 0,
-      duration: 100,
-      easing: Easing.inOut(Easing.ease),
+      duration: 1,
+      useNativeDriver: false,
     }).start();
     Animated.timing(passwordTrans, {
       toValue: 0,
-      duration: 100,
-      easing: Easing.inOut(Easing.ease),
+      duration: 1,
+      useNativeDriver: false,
     }).start();
     Animated.timing(buttonFade, {
       toValue: 1,
-      duration: 100,
-      easing: Easing.inOut(Easing.ease),
+      duration: 1,
+      useNativeDriver: false,
     }).start();
     Animated.timing(progressFade, {
       toValue: 0,
-      duration: 100,
-      easing: Easing.inOut(Easing.ease),
+      duration: 1,
+      useNativeDriver: false,
     }).start(() => {});
-  };
+  }
 
   const emailAnimatedStyle = {
     transform: [
