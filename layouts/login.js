@@ -9,17 +9,17 @@ import {
   ToastAndroid,
   Animated,
 } from 'react-native';
-import {RectButton} from 'react-native-gesture-handler';
-import {useLazyQuery} from '@apollo/react-hooks';
+import { RectButton } from 'react-native-gesture-handler';
+import { useLazyQuery } from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
-import {ProgressBar} from '@react-native-community/progress-bar-android';
+import { ProgressBar } from '@react-native-community/progress-bar-android';
 
 import TextInput from '../component/TextInput';
 import Button from '../component/LoginButton';
-import {CHECK_USER} from '../graphql/Queries';
+import { CHECK_USER } from '../graphql/Queries';
 
 LogBox.ignoreAllLogs();
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const aspectRation = 450 / 1084;
 const height = width * aspectRation;
 const styles = StyleSheet.create({
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     color: '#2CB9B0',
   },
 });
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
@@ -105,7 +105,7 @@ const Login = ({navigation}) => {
     ToastAndroid.show('User not found', ToastAndroid.SHORT);
   };
 
-  const [getData, {loading, data, called}] = useLazyQuery(CHECK_USER, {
+  const [getData, { loading, data, called }] = useLazyQuery(CHECK_USER, {
     onCompleted: (data) => {
       if (data !== undefined && loading === false && called) {
         if (data.Users.length === 0) {
@@ -150,10 +150,10 @@ const Login = ({navigation}) => {
       duration: 800,
       delay: 300,
       useNativeDriver: false,
-    }).start(() => getData({variables: {email, password}}));
+    }).start(() => getData({ variables: { email, password } }));
   };
 
-  function resetAnimation() {
+  const resetAnimation = () => {
     Animated.timing(emailTrans, {
       toValue: 0,
       duration: 1,
@@ -173,7 +173,7 @@ const Login = ({navigation}) => {
       toValue: 0,
       duration: 1,
       useNativeDriver: false,
-    }).start(() => {});
+    }).start(() => { });
   }
 
   const emailAnimatedStyle = {
