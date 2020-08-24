@@ -7,12 +7,12 @@ import {
   Text,
   LogBox,
   ToastAndroid,
-  Animated,
 } from 'react-native';
 import {RectButton} from 'react-native-gesture-handler';
 import {useLazyQuery} from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ProgressBar} from '@react-native-community/progress-bar-android';
+import Animated, {Easing} from 'react-native-reanimated';
 
 import TextInput from '../component/TextInput';
 import Button from '../component/LoginButton';
@@ -92,20 +92,21 @@ const styles = StyleSheet.create({
     color: '#2CB9B0',
   },
 });
+
+const emailTrans = new Animated.Value(0);
+const passwordTrans = new Animated.Value(0);
+const buttonFade = new Animated.Value(1);
+const progressFade = new Animated.Value(0);
+
 const Login = ({navigation}) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-
-  const emailTrans = new Animated.Value(0);
-  const passwordTrans = new Animated.Value(0);
-  const buttonFade = new Animated.Value(1);
-  const progressFade = new Animated.Value(0);
 
   const showToast = () => {
     ToastAndroid.show('User not found', ToastAndroid.SHORT);
   };
 
-  const [getData, {loading, data, called}] = useLazyQuery(CHECK_USER, {
+  const [getData, { loading,  called }] = useLazyQuery(CHECK_USER, {
     onCompleted: (data) => {
       if (data !== undefined && loading === false && called) {
         if (data.Users.length === 0) {
@@ -132,47 +133,48 @@ const Login = ({navigation}) => {
   const animatedBox = () => {
     Animated.timing(emailTrans, {
       toValue: 400,
-      duration: 800,
-      useNativeDriver: false,
+      duration: 1000,
+      easing: Easing.inOut(Easing.ease),
     }).start();
     Animated.timing(passwordTrans, {
       toValue: -400,
-      duration: 800,
-      useNativeDriver: false,
+      duration: 1000,
+      easing: Easing.inOut(Easing.ease),
     }).start();
     Animated.timing(buttonFade, {
       toValue: 0,
-      duration: 800,
-      useNativeDriver: false,
+      duration: 1000,
+      easing: Easing.inOut(Easing.ease),
     }).start();
     Animated.timing(progressFade, {
       toValue: 1,
-      duration: 800,
-      delay: 300,
-      useNativeDriver: false,
-    }).start(() => getData({variables: {email, password}}));
+      duration: 1000,
+      easing: Easing.inOut(Easing.ease),
+    }).start(() => {
+      getData({variables: {email, password}});
+    });
   };
 
   const resetAnimation = () => {
     Animated.timing(emailTrans, {
       toValue: 0,
-      duration: 1,
-      useNativeDriver: false,
+      duration: 100,
+      easing: Easing.inOut(Easing.ease),
     }).start();
     Animated.timing(passwordTrans, {
       toValue: 0,
-      duration: 1,
-      useNativeDriver: false,
+      duration: 100,
+      easing: Easing.inOut(Easing.ease),
     }).start();
     Animated.timing(buttonFade, {
       toValue: 1,
-      duration: 1,
-      useNativeDriver: false,
+      duration: 100,
+      easing: Easing.inOut(Easing.ease),
     }).start();
     Animated.timing(progressFade, {
       toValue: 0,
-      duration: 1,
-      useNativeDriver: false,
+      duration: 100,
+      easing: Easing.inOut(Easing.ease),
     }).start(() => {});
   };
 
